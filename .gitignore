@@ -6,7 +6,7 @@ application/cache/*
 application/logs/*
 !application/logs/index.html
 
-# !application/*/.htaccess
+!application/*/.htaccess
 
 composer.lock
 
@@ -31,5 +31,5 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /tests/results/
 
 # .htaccess
-# application/config/config.php
-# application/config/database.php
+application/config/config.php
+application/config/database.php
