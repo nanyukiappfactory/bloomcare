@@ -54,18 +54,14 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 /*
-Auth Routes
-*/
-$route['admin/login'] = 'auth/auth/login_admin';
-
-/*
 Friend Routes
 */
-// $route['friends/all-friends'] = 'friends/friends/index';
-// $route['friends/all-friends/(:any)/(:any)/(:num)'] = 'friends/friends/index/$1/$2/$3';
-// $route['friends/all-friends/(:any)/(:any)'] = 'friends/friends/index/$1/$2';
-
 $route['friends/all-friends'] = 'friends/test/index';
 $route['friends/all-friends/(:any)/(:any)/(:num)'] = 'friends/test/index/$1/$2/$3';
 $route['friends/all-friends/(:any)/(:any)'] = 'friends/test/index/$1/$2';
 $route['friends/all-friends/(:num)'] = 'friends/test/index/$1';
+
+/*
+Mapping Routes
+*/
+$route['bloomcare/mapping/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'map/map/index/$1/$2/$3/$4/$5/$6';
