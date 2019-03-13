@@ -64,4 +64,4 @@ $route['friends/all-friends/(:num)'] = 'friends/test/index/$1';
 /*
 Mapping Routes
 */
-$route['bloomcare/mapping/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'map/map/index/$1/$2/$3/$4/$5/$6';
+$route['map/save-mapping-points/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'map/map/index/$1/$2/$3/$4/$5/$6';
