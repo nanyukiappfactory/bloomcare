@@ -1,12 +1,12 @@
 {
-  "id": "com.dynamic.appf",
+  "id": "com.nanyukiaf.bloomcare",
   "schemaVersion": 1,
-  "version": "2",
-  "minorVersion": 1,
+  "version": "1",
+  "minorVersion": 63,
   "providerName": "NanyukiAF",
-  "displayName": "Dynamic",
-  "description": "Dynamic Form",
-  "icon": "icon-business.png",
+  "displayName": "Capture Map points",
+  "description": "Capture Map points",
+  "icon": "icons8-lotus-64.png",
   "appModel": "AppModel.json",
   "dials": {
     "isLocalised": false,
@@ -23,8 +23,8 @@
       "showLikes": false,
       "showComments": false,
       "labelResponseSending": "Submitting your details",
-      "labelResponded": "Business registration complete",
-      "labelResponseFailed": "Business registration failed",
+      "labelResponded": "Plotting points complete",
+      "labelResponseFailed": "Plotting points failed",
       "isResponseEditable": false
     },
     "ResponseResultsView": {
