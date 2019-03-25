@@ -1,14 +1,14 @@
 <?php
 class Map_model extends CI_Model
 {
-    function save_mapped_points($block,$lat,$long,$direction,$pillar_number,$door){
+    function save_mapped_points($onePoint){
         $data = array(
-            "block_name"    =>  $block,
-            "latitude"      =>  $lat,
-            "longitude"     =>  $long,
-            "direction"     =>  $direction,
-            "pillar_number" =>  $pillar_number,
-            "door"          =>  $door 
+            "block_name"    =>  $onePoint['blockHead'],
+            "latitude"      =>  $onePoint['Latitide'],
+            "longitude"     =>  $onePoint['Longitude'],
+            "direction"     =>  "null",
+            "pillar_number" =>  $onePoint['PillarNumber'],
+            "door"          =>  $onePoint['DoorNumber'] 
         );
         if($this->db->insert('plotted_map',$data)){
             return  "Successfully saved";

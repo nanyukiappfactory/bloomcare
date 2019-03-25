@@ -581,7 +581,7 @@
                     PillarDetailsValue.push(onePillarValue);
                     DoorDetailsValue.push(oneDoorValue);
                     //alert(onePillarValue);
-                    onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue};
+                    onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue,"blockHead":blockHead};
                    // onePointDetailsArray.push(onePointDetailsArrayObject);
                     //alert(JSON.stringify(onePointDetailsArray));
                     showPointDetails.push(onePointDetailsArrayObject);
@@ -598,7 +598,7 @@
                     oneDoorValue = 0;
                     PillarDetailsValue.push(onePillarValue);
                     DoorDetailsValue.push(oneDoorValue);
-                    onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue};
+                    onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue,"blockHead":blockHead};
                     showPointDetails.push(onePointDetailsArrayObject);
                     //alert(JSON.stringify(onePointDetailsArray));
                     //alert(JSON.stringify(showPointDetails));
@@ -1431,14 +1431,14 @@
                         }
                         if(onePillarValue != "null" && oneDoorValue == "null"){
                             oneDoorValue = 0;
-                            onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue};
+                            onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue,"blockHead":blockHead};
                             showPointDetails.push(onePointDetailsArrayObject);
                             _currentPage += 1;
                             //alert(_currentPage);
                             updatePage();
                         }
                         else if(onePillarValue != "null" && oneDoorValue != "null"){
-                            onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue};
+                            onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue,"blockHead":blockHead};
                             showPointDetails.push(onePointDetailsArrayObject);
                             _currentPage += 1;
                             //alert(_currentPage);
@@ -1455,11 +1455,6 @@
                     updatePage();
                     document.body.scrollTop = 0;
                 }
-                // if (_currentPage != TOTAL_PAGE) {
-                //     _currentPage += 1;
-                //     updatePage();
-                //     document.body.scrollTop = 0;
-                // } 
                 else 
                 {
                     if(_currentPage == 3){
@@ -1475,9 +1470,9 @@
                             
                             }
                         
-                        xhttp.open("POST", "https://bloom-care.azurewebsites.net/map/save-mapping-points/"+map_details, true);
-                        xhttp.setRequestHeader("Content-type", "text/plain");
-                        xhttp.send();
+                        xhttp.open("POST", "https://bloom-care.azurewebsites.net/map/save-mapping-points", true);
+                        xhttp.setRequestHeader("Content-type", "application/json");
+                        xhttp.send(map_details);
                         KASClient.App.hideProgressBar();
                         submitFormResponse();
                     }
