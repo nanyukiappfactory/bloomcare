@@ -1,8 +1,8 @@
 {
   "id": "com.nanyukiaf.bloomcare",
   "schemaVersion": 1,
-  "version": "1",
-  "minorVersion": 63,
+  "version": "4",
+  "minorVersion": 184,
   "providerName": "NanyukiAF",
   "displayName": "Capture Map points",
   "description": "Capture Map points",

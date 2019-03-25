@@ -15,8 +15,9 @@ class Map extends MX_Controller
         $this->load->model("site/file_model");
     }
 
-    public function index($block,$lat,$long,$direction,$pillar_number,$door)
+    public function index($map_details)
     {
+        var_dump($map_details);die();
         $save_farm_points = $this->map_model->save_mapped_points($block,$lat,$long,$direction,$pillar_number,$door);
         return $save_farm_points;
     }

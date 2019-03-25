@@ -28,10 +28,9 @@
   "strMiniAppHeaderTimeLabel": "Created by you at {0}",
   "strSendResponseLabel": "SUBMIT",
   "Response Time": "Response Time",
-  "Nanyuki": "Nanyuki",
-  "Meru": "Meru",
-  "Karatina": "Karatina",
-  "Nyeri": "Nyeri",
-  "Embu": "Embu",
-  "Region": "Region"
+  "Block A": "Block A",
+  "Block B": "Block B",
+  "Block C": "Block C",
+  "Block D": "Block D",
+  "Block E": "Block E"
 }

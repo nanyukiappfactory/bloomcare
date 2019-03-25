@@ -208,8 +208,17 @@ input[type="radio"]:checked {
 .question-title {
   padding: 15pt;
   font-size: 13.5pt;
-  font-weight: normal;
+  font-weight: bold;
   color: rgb(50, 72, 95);
+}
+.values-title{
+  padding: 15pt;
+  font-size: 13.5pt;
+  font-weight: bold; 
+  font-style: italic;
+  text-decoration: underline;
+  color: rgb(50, 72, 95);
+
 }
 
 .option-div {

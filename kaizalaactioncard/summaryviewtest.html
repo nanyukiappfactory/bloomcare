@@ -1,0 +1,70 @@
+let questions = _form["questions"];
+            let totalQuestions = questions.length;
+
+            for (var x = 0; x < totalQuestions; x++) {
+                let fieldDescription = questions[x];
+                let fieldId = fieldDescription["id"];
+                let fieldTitle = fieldDescription["title"];
+                let fieldType = fieldDescription["type"];
+                let fieldInputType = "";
+                let compressedTitle = fieldTitle.replace(/\s+/g, '');
+
+                if ((fieldTitle != "Name") && (fieldTitle != "Phone") && (fieldTitle != "Location") && (fieldTitle !=
+                        "Response Time")) {
+                    var fieldDiv = KASClient.UI.getElement("div", divAttributes);
+
+                    var fieldTitleDiv = KASClient.UI.getElement("div", {
+                        "padding": "14px",
+                        "padding-bottom": "0pt"
+                    });
+                    fieldTitleDiv.className = "comment-header";
+                    fieldTitleDiv.innerText = _strings[fieldTitle];
+
+                    var fieldInput = KASClient.UI.getElement("div", {
+                        "padding": "14px",
+                        "padding-top": "5pt"
+                    });
+
+                    var fieldInputValue = KASClient.UI.getElement("div", {
+                        "color": "#32485f",
+                        "font-size": "12pt",
+                        "overflow-wrap": "break-word",
+                        "word-wrap": "break-word",
+                        "word-break": "break-word"
+                    });
+
+                    if (fieldType == 8) {
+                        var img = KASClient.UI.getElement("img", {
+                            "width": "60%",
+                            "display": "block",
+                            "margin-left": "auto",
+                            "margin-right": "auto",
+                            "border-radius": "90%",
+                        });
+                        // img.setAttribute("src", document.getElementById(compressedTitle).getAttribute("src"));
+                        var _attachmentsList = _images;
+                        var gridContainerView = KASClient.UI.getElement("div", {
+                            "padding-bottom": "5px"
+                        });
+                        var _gridView = new KASClient.UI.KASImageGridAlbumView("", _attachmentsList, true, null, null);
+
+                        //adds image element to the imageDiv
+                        KASClient.UI.addElement(_gridView.getView(), gridContainerView);
+                        KASClient.UI.addElement(gridContainerView, fieldInputValue);
+                    } else if (fieldType == 0) {
+                        var option = fieldDescription["options"][selectedOptions[compressedTitle]];
+
+                        fieldInputValue.innerHTML = _strings[option.text];
+                    } else {
+                        fieldInputValue.innerHTML = document.getElementById(compressedTitle).value;
+                    }
+
+                    KASClient.UI.addElement(fieldInputValue, fieldInput);
+
+                    KASClient.UI.addElement(fieldTitleDiv, fieldDiv);
+                    KASClient.UI.addElement(fieldInput, fieldDiv);
+
+                    //Add items to page 3
+                    KASClient.UI.addElement(fieldDiv, pageThreeDiv);
+                }
+            }

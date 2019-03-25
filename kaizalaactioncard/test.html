@@ -18,21 +18,15 @@
     <div id="header">
     </div>
     <div class="body-container">
-        <div id="page1">
-            <!-- <div><img src="plusIcon.png" class="additionimg" alt="" style="width:40px;height:40px;"></div> -->
-        </div>
+        <div id="page1"></div>
         <div id="page2">
             <div class="section" id="detailsViewDiv" style="padding-top : 8px">
             </div>
-            <div class="section" id="locationViewDiv">
+            <div class="section" id="locationViewDiv" style="border-bottom: none">
             </div>
-            <!-- <div class="section" id="compassContainer">
-                <img src="compass5.png" id="compass" style="width:160px;height:160px;align-content:center;"/>
-            </div> -->
         </div>
         <div id="page3" style="width: 100%; padding-top: 8px">
         </div>
-        
     </div>
     <!--The footer section-->
     <div class="footer" id="footer">
@@ -45,24 +39,12 @@
         var printf = KASClient.App.printf;
 
         var _form; // type: KASForm
-        var map_details = "";
-        var blockHead = "";
-        var onePillarValue = "null";
-        var oneDoorValue = "null";
-        var PillarDetailsValue = [];
-        var count = 1;
+        var blockDetailsValue = "";
+        var PillarDetailsValue = "";
         var _lat = "";
         var _long = "";
-        var _latitude = [];
-        var _longitude = [];
         var _currentPage = 1;
-        var _pointLatitude = "";
-        var _pointLongitude = "";
-        var DoorDetailsValue = [];
-        var onePointDetailsArrayObject = "";
-        var onePointDetailsArray = [];
-        var showPointDetails = [];
-        var valuetobeDeleted = "";
+        var DoorDetailsValue = "";
         var DirectionDetailsValue = "";
         var _isLocationRefreshing = false;
         var _strings = null;
@@ -182,6 +164,9 @@
                     return;
                 }
                 var _myCurrentLocation = JSON.parse(location);
+                // _myCurrentLocation["lt"] = _latitude;
+                // _myCurrentLocation["lg"] = _longitude;
+                // alert(_latitude);
                 var xmlHttp = new XMLHttpRequest();
                 var url =
                     "https://maps.googleapis.com/maps/api/geocode/json?latlng" +  _myCurrentLocation["lt"] + "," + _myCurrentLocation["lg"] + "&key=AIzaSyAMfrWKiELcjgQDzNq1n3LTVMSQAXGSs6E";
@@ -217,52 +202,21 @@
                 if (error != null) {
                     return;
                 }
+                
                 var _myLocation = JSON.parse(location);
                 // alert(JSON.stringify(_myLocation));
                 // alert(JSON.stringify(_myLocation["lt"]));
-                _pointLatitude = _myLocation["lt"];
-                _pointLongitude = _myLocation["lg"];
-                _latitude.push(_pointLatitude);
-                _longitude.push(_pointLongitude);
+                _latitude = _myLocation["lt"];
+                _longitude = _myLocation["lg"];
                 //alert(_longitude);
                 inflateHTML();
                 // alert(JSON.stringify(_latitude));
 
             });
         }
-        function initCompass(){
-            var compass = document.getElementById("compass");
-            KASClient.UI.clearElement(compass);
-            if(window.DeviceOrientationEvent) {
-                window.addEventListener('deviceorientation', function(event) {
-                    var alpha;
-                    //Check for iOS property
-                    if(event.webkitCompassHeading) {
-                        alpha = event.webkitCompassHeading;
-                        //Rotation is reversed for iOS
-                        compass.style.WebkitTransform = 'rotate(-' + alpha + 'deg)';
-                    }
-                    //non iOS
-                    else {
-                        alpha = event.alpha;
-                        //alert(alpha);
-                        webkitAlpha = alpha;
-                        if(!window.chrome) {
-                            //Assume Android stock (this is crude, but good enough for our example) and apply offset
-                            webkitAlpha = alpha-270;
-                        }
-                    }
 
-                    compass.style.Transform = 'rotate(' + alpha + 'deg)';
-                    compass.style.WebkitTransform = 'rotate('+ webkitAlpha + 'deg)';
-                    //Rotation is reversed for FF
-                    compass.style.MozTransform = 'rotate(-' + alpha + 'deg)'; 
-                }, false);
-            }
-        }
         function onPageLoad() {
             getCoordinates();
-            
             // Register for Android h/w back press event
             KASClient.App.registerHardwareBackPressCallback(function () {
                 KASClient.App.dismissCurrentScreen();
@@ -412,9 +366,6 @@
             inflateHeader();
 
             updatePage();
-            onePillarValue = 'null';
-            oneDoorValue = 'null';
-            
         }
 
         function updatePage() {
@@ -427,9 +378,7 @@
                 loadPointsPage(_form["questions"]);
             }
             if(_currentPage == 2){
-                //initCompass();
                 getCurrentLocation();
-                
                 // loadPointsPage(_form["questions"]);
             }
             // if (_currentPage == 2 && _isLocationNotFetched) {
@@ -467,158 +416,48 @@
 
             KASClient.UI.addElement(navigationBar.getView(), header);
         }
+
         //function that displays the location points
 
         function loadPointsPage(questions){
-            //alert(1);
+            
             KASClient.App.hideProgressBar();
             //Get and clear HTML from page 1
-            let totalQuestions = questions.length;
             var pageOneDiv = document.getElementById("page1");
             KASClient.UI.clearElement(pageOneDiv);
-            
-            
-            for (var x = 0; x < totalQuestions; x++) {
-                let fieldDescription = questions[x];
-                let fieldId = fieldDescription["id"];
-                let fieldTitle = fieldDescription["title"];
-                let fieldType = fieldDescription["type"];
-                let optional = fieldDescription["isResponseOptional"];
-                let fieldInputType = "";
-                let compressedTitle = fieldTitle.replace(/\s+/g, '');
 
-                switch (fieldType) {
-                    case 0:
-                        fieldInputType = "select";
-                        break;
-                    case 2:
-                        fieldInputType = "text";
-                        break;
-                    case 3:
-                        fieldInputType = "number";
-                        break;
-                    case 5:
-                        fieldInputType = "datetime-local";
-                        break;
-                    case 8:
-                        fieldInputType = "image";
-                        break;
-                    case 10:
-                        fieldInputType = "date";
-                        break;
-                    default:
-                        fieldInputType = "text";
-                }
-                if(fieldInputType == "select" && fieldTitle == "Block Details"){
-                    var fieldDiv = KASClient.UI.getElement("div");
-                    fieldDiv.className = "section";
-                    var fieldTitleDiv = KASClient.UI.getElement("div");
-                    fieldTitleDiv.className = "question-title";
-                    fieldTitleDiv.innerText = _strings["Block Details"];
-                    var fieldInput = KASClient.UI.getElement("div");
-                    fieldInput.className = "option-div";
-                    for (i = 0; i < fieldDescription["options"].length; i++) {
-                        var option = fieldDescription["options"][i];
-                        var options = KASClient.UI.getElement("div");
-                        options.className = "options";
-                        options.value = option.id;
-                        // options.onclick = function () {
-                        //     this.checked = true;
-                        //     selectedOptions[compressedTitle] = this.value;
-                        //     invalidateFooter();
-                        // };
+            // Start of Block details input field
+            var fieldDiv = KASClient.UI.getElement("div");
+            fieldDiv.className = "section";
+            var fieldTitleDiv = KASClient.UI.getElement("div");
+            fieldTitleDiv.className = "question-title";
+            fieldTitleDiv.innerText = _strings["Block Details"];
+            var fieldInput = KASClient.UI.getElement("input");
+            fieldInput.type = "text";
+            fieldInput.className = "comment-input";
+            fieldInput.id = "BlockDetails";
 
-                        var title = KASClient.UI.getElement("label", {
-                            "width": "85%",
-                            "padding-left": "6pt"
-                        });
-                        title.innerText = _strings[option.text];
-                        // if(i >= 1){
-                            var radio = KASClient.UI.getElement("input");
-                            radio.type = "radio";
-                            // radio.name = option.text + option.id;
-                            radio.name = compressedTitle + fieldId;
-                            radio.id = option.text;
-                            radio.onclick = function (event) {
-                                // alert(option);
-                                // alert(event.target.id);
-                                selectedOptions[compressedTitle] = event.target.id;
-                                blockHead = event.target.id;
-                                invalidateFooter();
-                            };
-                            KASClient.UI.addElement(title, options);
-                            KASClient.UI.addElement(radio, options);
-                        
-                        // }
-
-                        KASClient.UI.addElement(options, fieldInput);
-                    }
-
-                }
+            //dependancy for IOS for just adding padding
+            if (KASClient.getPlatform() == KASClient.Platform.iOS) {
+                KASClient.UI.addCSS(fieldInput, {
+                    "padding-left": "13pt"
+                });
             }
-            //Addition icon
-            //alert(2);
-            var fieldDiv6 = KASClient.UI.getElement("div");
-            var fieldTitleDiv6 = KASClient.UI.getElement("div");
-            fieldTitleDiv6.className = "question-title";
-            fieldTitleDiv6.innerText = "Add another point";
-            var fieldInput6 = KASClient.UI.getElement("img",{
-                "width": "40",
-                "height": "40",
-                "padding-left": "15pt",
-                "padding-top": "5px",
-                "padding-bottom": "10pt"
+            
+            fieldInput.placeholder = "Enter block details";
+           
+            fieldInput.addEventListener("input", function (event) {
+                blockDetailsValue = event.target.value;
+                invalidateFooter();
             });
-            fieldInput6.src = "plusIcon.png";
-            //alert(3);
-            fieldInput6.addEventListener("click",function(){
-                //alert(4);
-                
-                if((onePillarValue != "null" && oneDoorValue != "null")||(onePillarValue != "null" && oneDoorValue == 0))
-                {
-                    // alert("nkt");
-                    // alert(onePillarValue);
-                    PillarDetailsValue.push(onePillarValue);
-                    DoorDetailsValue.push(oneDoorValue);
-                    //alert(onePillarValue);
-                    onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue};
-                   // onePointDetailsArray.push(onePointDetailsArrayObject);
-                    //alert(JSON.stringify(onePointDetailsArray));
-                    showPointDetails.push(onePointDetailsArrayObject);
-                    //alert(JSON.stringify(showPointDetails));
-                    getCoordinates();
-                    //document.getElementById('PillarNumber').value = "null";
-                    //document.getElementById('DoorDetails').value = "null";
-                    
-                    //onePointDetailsArray = [];
-                    
-                }
-                
-                if(onePillarValue != "null" && oneDoorValue == "null"){
-                    oneDoorValue = 0;
-                    PillarDetailsValue.push(onePillarValue);
-                    DoorDetailsValue.push(oneDoorValue);
-                    onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue};
-                    showPointDetails.push(onePointDetailsArrayObject);
-                    //alert(JSON.stringify(onePointDetailsArray));
-                    //alert(JSON.stringify(showPointDetails));
-                    getCoordinates();
-                    onePillarValue = 'null';
-                    oneDoorValue = 'null';
-                    //onePointDetailsArray = [];
-                    //document.getElementById('PillarNumber').value = "null";
-                }
-                else if((onePillarValue == "null" && oneDoorValue == "null") || (onePillarValue == "null" && oneDoorValue != "null")){
-                    showError("Kindly add the pillar number of the existing location before adding another one");
-                }
-                // onePillarValue = "null";               
-            })
-
+         
+            // End of Block details input field
+            
             //Start of automatically  Latitude filled input field
-            //alert(6);
+            
             var fieldDiv1 = KASClient.UI.getElement("div");
             fieldDiv1.className = "section";
-            
+           
             var fieldTitleDiv1 = KASClient.UI.getElement("div");
             fieldTitleDiv1.className = "question-title";
             fieldTitleDiv1.innerText = "Latitude";
@@ -626,13 +465,23 @@
             fieldInput1.type = "number";
             fieldInput1.className = "comment-input";
             fieldInput1.id = "Latitude";
+            // alert("wooi");
             fieldInput1.innerText = _latitude;
+            //alert("wooi2");
             //dependancy for IOS for just adding padding
             if (KASClient.getPlatform() == KASClient.Platform.iOS) {
                 KASClient.UI.addCSS(fieldInput1, {
                     "padding-left": "13pt"
                 });
             }
+
+            //fieldInput1.placeholder = _latitude;
+
+            // fieldInput1.addEventListener("input", function (event) {
+            //     //blockDetailsValue = event.target.value;
+            //     invalidateFooter();
+            // });
+
             //End of automatically  Latitude filled input field
 
             //Start of automatically  Longitude filled input field
@@ -653,7 +502,16 @@
                     "padding-left": "13pt"
                 });
             }
+
+            //fieldInput2.placeholder = _longitude;
+
+            // fieldInput2.addEventListener("input", function (event) {
+            //     //blockDetailsValue = event.target.value;
+            //     invalidateFooter();
+            // });
+
             //End of automatically  Longitude filled input field
+
 
             //Start of pillar number/bed number to be details
            
@@ -666,9 +524,7 @@
             fieldInput3.type = "number";
             fieldInput3.className = "comment-input";
             fieldInput3.id = "PillarNumber";
-            var fieldLabel3 = KASClient.UI.getElement("label");
-            fieldLabel3.className = "question-title";
-            fieldLabel3.innerText = PillarDetailsValue;
+
 
             //dependancy for IOS for just adding padding
             if (KASClient.getPlatform() == KASClient.Platform.iOS) {
@@ -680,7 +536,7 @@
             fieldInput3.placeholder ="Enter pillar number";
 
             fieldInput3.addEventListener("input", function (event) {
-                onePillarValue = event.target.value;
+                PillarDetailsValue = event.target.value;
                 invalidateFooter();
             });
 
@@ -697,10 +553,8 @@
             fieldInput4.type = "text";
             fieldInput4.className = "comment-input";
             fieldInput4.id = "DoorDetails";
-            var fieldLabel4 = KASClient.UI.getElement("label");
-            fieldLabel4.className = "question-title";
-            fieldLabel4.innerText = DoorDetailsValue;
-            
+
+
             //dependancy for IOS for just adding padding
             if (KASClient.getPlatform() == KASClient.Platform.iOS) {
                 KASClient.UI.addCSS(fieldInput4, {
@@ -711,7 +565,7 @@
             fieldInput4.placeholder = "Enter Door details";
 
             fieldInput4.addEventListener("input", function (event) {
-                oneDoorValue = event.target.value;
+                DoorDetailsValue = event.target.value;
                 invalidateFooter();
             });
 
@@ -723,80 +577,52 @@
             var fieldTitleDiv5 = KASClient.UI.getElement("div");
             fieldTitleDiv5.className = "question-title";
             fieldTitleDiv5.innerText = _strings["Direction"];
-            var fieldInput5 = KASClient.UI.getElement("div");
+            var fieldInput5 = KASClient.UI.getElement("input");
+            fieldInput5.type = "text";
             fieldInput5.className = "comment-input";
             fieldInput5.id = "Direction";
-        
+
+
             //dependancy for IOS for just adding padding
             if (KASClient.getPlatform() == KASClient.Platform.iOS) {
                 KASClient.UI.addCSS(fieldInput5, {
                     "padding-left": "13pt"
                 });
             }
-           
-            //End of direction
 
-            //View all location points so as also to enable deleting
-            var allValuesDiv = KASClient.UI.getElement("div");
-            var allValuesTitleDiv = KASClient.UI.getElement("div");
-            allValuesTitleDiv.className = "question-title";
-            allValuesTitleDiv.className = "values-title";
-            allValuesTitleDiv.innerText = "Points Added";
-            var allValues = KASClient.UI.getElement("ol");
-            if(showPointDetails.length >=1){
-                for(var x=0;x<showPointDetails.length;x++){
-                    var listValue = KASClient.UI.getElement("li",{
-                        "margin-bottom":"6"
-                    });
-                    listValue.innerHTML = showPointDetails[x].Latitide;
-                    listValue.innerHTML = "Latitude is: "+showPointDetails[x].Latitide+" Longitude is:"+showPointDetails[x].Longitude+" Pillar Number is:"+showPointDetails[x].PillarNumber+" Door Number is:"+showPointDetails[x].DoorNumber;
-                    var ImgClose = KASClient.UI.getElement("img",{
-                    "width": "20",
-                    "height": "20",
-                    });
-                    ImgClose.src = "close.png";
-                    ImgClose.id = x;
-                    KASClient.UI.addElement(ImgClose,listValue);
-                    KASClient.UI.addElement(listValue,allValues);
-                    ImgClose.addEventListener("click",(e) => {
-                        // alert(e);
-                        // alert(e.target.id);
-                        showPointDetails.pop(e.target.id);
-                        loadPointsPage(questions);            
-                    });
-                }
-            }
+            fieldInput5.placeholder = "Enter Direction";
+
+            fieldInput5.addEventListener("input", function (event) {
+                DirectionDetailsValue = event.target.value;
+                invalidateFooter();
+            });
+
+            //End of direction
+           
             KASClient.UI.addElement(fieldTitleDiv, fieldDiv);
             KASClient.UI.addElement(fieldInput, fieldDiv);
-            KASClient.UI.addElement(fieldTitleDiv6, fieldDiv6);
-            KASClient.UI.addElement(fieldInput6, fieldDiv6);
             KASClient.UI.addElement(fieldTitleDiv1, fieldDiv1);
             KASClient.UI.addElement(fieldInput1, fieldDiv1);
             KASClient.UI.addElement(fieldTitleDiv2, fieldDiv2);
             KASClient.UI.addElement(fieldInput2, fieldDiv2);
             KASClient.UI.addElement(fieldTitleDiv3, fieldDiv3);
             KASClient.UI.addElement(fieldInput3, fieldDiv3);
-            KASClient.UI.addElement(fieldLabel3, fieldDiv3);
             KASClient.UI.addElement(fieldTitleDiv4, fieldDiv4);
             KASClient.UI.addElement(fieldInput4, fieldDiv4);
-            KASClient.UI.addElement(fieldLabel4, fieldDiv4);
             KASClient.UI.addElement(fieldTitleDiv5, fieldDiv5);
             KASClient.UI.addElement(fieldInput5, fieldDiv5);
-            KASClient.UI.addElement(allValuesTitleDiv, allValuesDiv);
-            KASClient.UI.addElement(allValues, allValuesDiv);
+           
            
             //Add items to page 1
             KASClient.UI.addElement(fieldDiv, pageOneDiv);
-            KASClient.UI.addElement(fieldDiv6, pageOneDiv);
             KASClient.UI.addElement(fieldDiv1, pageOneDiv);
             KASClient.UI.addElement(fieldDiv2, pageOneDiv);
             KASClient.UI.addElement(fieldDiv3, pageOneDiv);
             KASClient.UI.addElement(fieldDiv4, pageOneDiv);
             KASClient.UI.addElement(fieldDiv5, pageOneDiv);
-            KASClient.UI.addElement(allValuesDiv, pageOneDiv);
             invalidateFooter();
         }
-    
+
         function loadPage(questions) {
             let totalQuestions = questions.length;
             //Get and clear HTML from page 1
@@ -1161,7 +987,6 @@
         }
 
         function inflateLocationView() {
-            
             var locationViewDiv = document.getElementById("locationViewDiv");
             KASClient.UI.clearElement(locationViewDiv);
 
@@ -1274,7 +1099,6 @@
                 refreshImg.className = "refresh-img-selected";
             }
 
-
             KASClient.UI.addElement(refreshImg, refreshDiv);
             KASClient.UI.addElement(refreshLabel, refreshDiv);
 
@@ -1291,7 +1115,7 @@
                 inflateSummaryView();
             }
         }
- 
+
         function invalidateFooter() {
             inflateFooterView();
         }
@@ -1377,37 +1201,10 @@
             nextButton.value = (_currentPage == TOTAL_PAGE ? _strings["strSendResponseLabel"] : "");
             var nextButtonIsDisabled = false;
             if (_currentPage == 1) {
-                if((_latitude == "" || _latitude == null) || (_longitude == "" || _longitude == null) ||(_longitude == "" || _longitude == null)  || (PillarDetailsValue == "" || PillarDetailsValue == null)){
+                if((_latitude == "" || _latitude == null) || (_longitude == "" || _longitude == null) ||(_longitude == "" || _longitude == null) || (blockDetailsValue == "" || blockDetailsValue == null) || (PillarDetailsValue == "" || PillarDetailsValue == null) || (DoorDetailsValue == "" || DoorDetailsValue == null)){
                     nextButtonIsDisabled = true;
+                    
                 }
-                let questions = _form["questions"];
-                let totalQuestions = questions.length;
-                var count = 0;
-
-                for (var x = 0; x < totalQuestions; x++) {
-                    let fieldDescription = questions[x];
-                    let fieldId = fieldDescription["id"];
-                    let fieldTitle = fieldDescription["title"];
-                    let fieldType = fieldDescription["type"];
-                    let fieldInputType = "";
-                    var compressedTitle = fieldTitle.replace(/\s+/g, '');
-                    // if ((fieldTitle != "Name") && (fieldTitle != "Phone") && (fieldTitle != "Location") && (fieldTitle !=
-                    //         "Response Time") && (fieldTitle != "Business Location") && (fieldTitle != "Business Image")) {
-                    let formValue = "";
-                    if (fieldInputType == "select" && fieldTitle == "Block Details") {
-                        if (formValue !== 0) {
-                            if ((formValue == "") || (formValue == null)) {
-                                nextButtonIsDisabled = true;
-                            }
-                            else{
-                                formValue = selectedOptions[compressedTitle];
-                                //alert(formValue);
-                            }
-                        }
-                    } 
-                    // }
-                }    
-                
             } else if (_currentPage == 2) {
                 if (_isLocationRefreshing) {
                     nextButtonIsDisabled = true;
@@ -1421,66 +1218,28 @@
                 });
             }
             nextButton.addEventListener("click", function () {
-                if(_currentPage == 1){
-                    if(_latitude.length != PillarDetailsValue.length){
-                        if(onePillarValue == "null"){
-                            _currentPage = 1;
-                            updatePage();
-                            showError("Kindly fill in the pillar details");
-                            //nextButtonIsDisabled = true;
-                        }
-                        if(onePillarValue != "null" && oneDoorValue == "null"){
-                            oneDoorValue = 0;
-                            onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue};
-                            showPointDetails.push(onePointDetailsArrayObject);
-                            _currentPage += 1;
-                            //alert(_currentPage);
-                            updatePage();
-                        }
-                        else if(onePillarValue != "null" && oneDoorValue != "null"){
-                            onePointDetailsArrayObject = {"Latitide":_pointLatitude,"Longitude":_pointLongitude,"PillarNumber":onePillarValue,"DoorNumber":oneDoorValue};
-                            showPointDetails.push(onePointDetailsArrayObject);
-                            _currentPage += 1;
-                            //alert(_currentPage);
-                            updatePage();
-                        }
-
-                        document.body.scrollTop = 0;
-                    }
-                }
-                else if(_currentPage == 2){
-                    //getCurrentLocation();
+                if (_currentPage != TOTAL_PAGE) {
                     _currentPage += 1;
-                    //alert(_currentPage);
                     updatePage();
                     document.body.scrollTop = 0;
-                }
-                // if (_currentPage != TOTAL_PAGE) {
-                //     _currentPage += 1;
-                //     updatePage();
-                //     document.body.scrollTop = 0;
-                // } 
-                else 
-                {
-                    if(_currentPage == 3){
-                        KASClient.App.showProgressBar("Submitting your points");
-                        map_details = JSON.stringify(showPointDetails);
-                        var xhttp = new XMLHttpRequest();
-                        xhttp.onreadystatechange = function () {
-                            if(this.readyState == 4 && this.status == 200) {
-                                KASClient.App.hideProgressBar();
-                                plotting_message = JSON.parse(this.responseText);
-                                showError(plotting_message);                            
-                                }
+                } else {
+                    KASClient.App.showProgressBar("Submitting your points");
+                    var xhttp = new XMLHttpRequest();
+					xhttp.onreadystatechange = function () {
+                        if(this.readyState == 4 && this.status == 200) {
+                            KASClient.App.hideProgressBar();
+                            plotting_message = JSON.parse(this.responseText);
+
                             
                             }
-                        
-                        xhttp.open("POST", "https://bloom-care.azurewebsites.net/map/save-mapping-points/"+map_details, true);
-                        xhttp.setRequestHeader("Content-type", "text/plain");
-                        xhttp.send();
-                        KASClient.App.hideProgressBar();
-                        submitFormResponse();
-                    }
+                           
+                        }
+                    
+                    xhttp.open("POST", "https://bloom-care.azurewebsites.net/map/save-mapping-points/"+blockDetailsValue+ "/" +_latitude+ "/" +_longitude+ "/" +DirectionDetailsValue+ "/" +PillarDetailsValue+ "/"+ DoorDetailsValue, true);
+                    xhttp.setRequestHeader("Content-type", "text/plain");
+                    xhttp.send();
+                    KASClient.App.hideProgressBar();
+                    submitFormResponse();
                 }
             });
 
@@ -1503,147 +1262,183 @@
                 "box-shadow": "0px 0px 1px 0px rgba(0,0,0,0.12)",
                 "border-radius": "4px"
             };
-            var internalSpace = {
-                "margin-right": "3px",
-            }
 
             //Get and clear HTML from page 3
-            // var pageThreeDiv = document.getElementById("page3");
-            // KASClient.UI.clearElement(pageThreeDiv);
-            var point = 0;
-            var pageThreeDiv = KASClient.UI.getElement("div");
-            var blockHeader = KASClient.UI.getElement("div", {
+            var pageThreeDiv = document.getElementById("page3");
+            KASClient.UI.clearElement(pageThreeDiv);
+
+            let questions = _form["questions"];
+            let totalQuestions = questions.length;
+
+            for (var x = 0; x < totalQuestions; x++) {
+                let fieldDescription = questions[x];
+                let fieldId = fieldDescription["id"];
+                let fieldTitle = fieldDescription["title"];
+                let fieldType = fieldDescription["type"];
+                let fieldInputType = "";
+                let compressedTitle = fieldTitle.replace(/\s+/g, '');
+
+                if ((fieldTitle != "Name") && (fieldTitle != "Phone") && (fieldTitle != "Location") && (fieldTitle !=
+                        "Response Time")) {
+                    var fieldDiv = KASClient.UI.getElement("div", divAttributes);
+
+                    var fieldTitleDiv = KASClient.UI.getElement("div", {
+                        "padding": "14px",
+                        "padding-bottom": "0pt"
+                    });
+                    fieldTitleDiv.className = "comment-header";
+                    fieldTitleDiv.innerText = _strings[fieldTitle];
+
+                    var fieldInput = KASClient.UI.getElement("div", {
+                        "padding": "14px",
+                        "padding-top": "5pt"
+                    });
+
+                    var fieldInputValue = KASClient.UI.getElement("div", {
+                        "color": "#32485f",
+                        "font-size": "12pt",
+                        "overflow-wrap": "break-word",
+                        "word-wrap": "break-word",
+                        "word-break": "break-word"
+                    });
+
+                    if (fieldType == 8) {
+                        var img = KASClient.UI.getElement("img", {
+                            "width": "60%",
+                            "display": "block",
+                            "margin-left": "auto",
+                            "margin-right": "auto",
+                            "border-radius": "90%",
+                        });
+                        // img.setAttribute("src", document.getElementById(compressedTitle).getAttribute("src"));
+                        var _attachmentsList = _images;
+                        var gridContainerView = KASClient.UI.getElement("div", {
+                            "padding-bottom": "5px"
+                        });
+                        var _gridView = new KASClient.UI.KASImageGridAlbumView("", _attachmentsList, true, null, null);
+
+                        //adds image element to the imageDiv
+                        KASClient.UI.addElement(_gridView.getView(), gridContainerView);
+                        KASClient.UI.addElement(gridContainerView, fieldInputValue);
+                    } else if (fieldType == 0) {
+                        var option = fieldDescription["options"][selectedOptions[compressedTitle]];
+
+                        fieldInputValue.innerHTML = _strings[option.text];
+                    } else {
+                        fieldInputValue.innerHTML = document.getElementById(compressedTitle).value;
+                    }
+
+                    KASClient.UI.addElement(fieldInputValue, fieldInput);
+
+                    KASClient.UI.addElement(fieldTitleDiv, fieldDiv);
+                    KASClient.UI.addElement(fieldInput, fieldDiv);
+
+                    //Add items to page 3
+                    KASClient.UI.addElement(fieldDiv, pageThreeDiv);
+                }
+            }
+
+            // Personal Details Summary
+            var detailsDiv = KASClient.UI.getElement("div", divAttributes);
+
+            var detailsHeader = KASClient.UI.getElement("div", {
                 "padding": "14px",
                 "padding-bottom": "0pt"
             });
-            blockHeader.innerText = blockHead;
-            KASClient.UI.addElement(blockHeader, summaryView);
-            for(var y=0; y<showPointDetails.length;y++){
-                var fieldDiv = KASClient.UI.getElement("div", divAttributes);
-                var fieldTitleDiv = KASClient.UI.getElement("div", {
-                    "padding": "14px",
-                    "padding-bottom": "0pt"
+            detailsHeader.className = "comment-header";
+            detailsHeader.innerText = _strings["strMiniAppYourDetails"];
+            KASClient.UI.addElement(detailsHeader, detailsDiv);
+
+            var details = KASClient.UI.getElement("table", {
+                "border": "none",
+                "padding": "14px",
+                "padding-top": "5pt",
+                "color": "#32485f",
+                "font-size": "12pt",
+                "overflow-wrap": "break-word",
+                "word-wrap": "break-word",
+                "word-break": "break-word"
+            });
+
+            var row1 = details.insertRow(0);
+            var cell11 = row1.insertCell(0);
+            var cell12 = row1.insertCell(1);
+            cell11.className = "first-column";
+            cell11.innerHTML = _strings["Name"];
+            cell12.innerHTML = ": " + _name;
+
+            var row2 = details.insertRow(1);
+            var cell21 = row2.insertCell(0);
+            var cell22 = row2.insertCell(1);
+            cell21.className = "first-column";
+            cell21.innerHTML = _strings["Phone"];
+            cell22.innerHTML = ": " + _phoneNumber;
+
+            KASClient.UI.addElement(details, detailsDiv);
+
+            // Location Summary
+            var locationDiv = KASClient.UI.getElement("div", divAttributes);
+
+            var locationHeader = KASClient.UI.getElement("div", {
+                "padding": "14px",
+                "padding-bottom": "0pt"
+            });
+            locationHeader.className = "comment-header";
+            locationHeader.innerText = _strings["Location"];
+            KASClient.UI.addElement(locationHeader, locationDiv);
+
+            var location = KASClient.UI.getElement("div", {
+                "padding-bottom": "14px",
+                "padding-top": "14px"
+            });
+
+            if (_currentLocation.hasOwnProperty("lt") == true && _currentLocation.hasOwnProperty("lg") == true) {
+                var locationMap = KASClient.UI.getElement("img", {
+                    "width": "100%",
+                    "height": "auto",
+                    "max-height": "200pt",
+                    "padding-bottom": "10pt"
                 });
-                fieldTitleDiv.className = "comment-header";
-                fieldTitleDiv.innerText = "Point "+point++ +" is:" ;
-                var fieldInput = KASClient.UI.getElement("div", {
-                    "padding": "14px",
-                    "padding-top": "5pt"
-                });
-                var fieldInputValue = KASClient.UI.getElement("div", {
-                    "color": "#32485f",
-                    "font-size": "12pt",
-                    "overflow-wrap": "break-word",
-                    "word-wrap": "break-word",
-                    "word-break": "break-word"
-                });
-                var dynamicValues = "Latitude:" + showPointDetails[y].Latitide + "  Longitude: " +showPointDetails[y].Longitude + "  Pillar Number: " +showPointDetails[y].PillarNumber + "  Door Number: " +showPointDetails[y].DoorNumber;                fieldInputValue.innerHTML = dynamicValues;
-                KASClient.UI.addElement(fieldInputValue, fieldInput);
-                KASClient.UI.addElement(fieldTitleDiv, fieldDiv);
-                KASClient.UI.addElement(fieldInput, fieldDiv);
-                KASClient.UI.addElement(fieldDiv, summaryView);
+                locationMap.src =
+                    "https://maps.googleapis.com/maps/api/staticmap?zoom=18&size=360x170&maptype=roadmap&markers=color:blue%7C%7C" +
+                    _currentLocation["lt"] + "," + _currentLocation["lg"] +
+                    "&key=AIzaSyAMfrWKiELcjgQDzNq1n3LTVMSQAXGSs6E";
+                locationMap.onerror = function (e) {
+                    KASClient.UI.removeElement(locationMap, location);
+                }
+                KASClient.UI.addElement(locationMap, location);
             }
-            
 
-            // // Personal Details Summary
-            // var detailsDiv = KASClient.UI.getElement("div", divAttributes);
+            var locationName;
+            if (_currentLocation["n"] != "") {
+                locationName = KASClient.UI.getElement("div", {
+                    "padding": "14px",
+                    "padding-top": "0pt",
+                    "padding-bottom": "0pt",
+                    "color": "#32485f",
+                    "font-size": "12pt"
+                });
 
-            // var detailsHeader = KASClient.UI.getElement("div", {
-            //     "padding": "14px",
-            //     "padding-bottom": "0pt"
-            // });
-            // detailsHeader.className = "comment-header";
-            // detailsHeader.innerText = _strings["strMiniAppYourDetails"];
-            // KASClient.UI.addElement(detailsHeader, detailsDiv);
+                locationName.innerHTML = _currentLocation["n"];
+            } else {
+                locationName = KASClient.UI.getElement("div", {
+                    "padding": "14px",
+                    "padding-top": "0pt",
+                    "padding-bottom": "0pt",
+                    "color": "#6f7e8f",
+                    "font-size": "9pt"
+                });
 
-            // var details = KASClient.UI.getElement("table", {
-            //     "border": "none",
-            //     "padding": "14px",
-            //     "padding-top": "5pt",
-            //     "color": "#32485f",
-            //     "font-size": "12pt",
-            //     "overflow-wrap": "break-word",
-            //     "word-wrap": "break-word",
-            //     "word-break": "break-word"
-            // });
+                locationName.innerHTML = _strings["strNoLocationLabel"];
+            }
 
-            // var row1 = details.insertRow(0);
-            // var cell11 = row1.insertCell(0);
-            // var cell12 = row1.insertCell(1);
-            // cell11.className = "first-column";
-            // cell11.innerHTML = _strings["Name"];
-            // cell12.innerHTML = ": " + _name;
+            KASClient.UI.addElement(locationName, location);
 
-            // var row2 = details.insertRow(1);
-            // var cell21 = row2.insertCell(0);
-            // var cell22 = row2.insertCell(1);
-            // cell21.className = "first-column";
-            // cell21.innerHTML = _strings["Phone"];
-            // cell22.innerHTML = ": " + _phoneNumber;
+            KASClient.UI.addElement(location, locationDiv);
 
-            // KASClient.UI.addElement(details, detailsDiv);
-
-            // // Location Summary
-            // var locationDiv = KASClient.UI.getElement("div", divAttributes);
-
-            // var locationHeader = KASClient.UI.getElement("div", {
-            //     "padding": "14px",
-            //     "padding-bottom": "0pt"
-            // });
-            // locationHeader.className = "comment-header";
-            // locationHeader.innerText = _strings["Location"];
-            // KASClient.UI.addElement(locationHeader, locationDiv);
-
-            // var location = KASClient.UI.getElement("div", {
-            //     "padding-bottom": "14px",
-            //     "padding-top": "14px"
-            // });
-
-            // if (_currentLocation.hasOwnProperty("lt") == true && _currentLocation.hasOwnProperty("lg") == true) {
-            //     var locationMap = KASClient.UI.getElement("img", {
-            //         "width": "100%",
-            //         "height": "auto",
-            //         "max-height": "200pt",
-            //         "padding-bottom": "10pt"
-            //     });
-            //     locationMap.src =
-            //         "https://maps.googleapis.com/maps/api/staticmap?zoom=18&size=360x170&maptype=roadmap&markers=color:blue%7C%7C" +
-            //         _currentLocation["lt"] + "," + _currentLocation["lg"] +
-            //         "&key=AIzaSyAMfrWKiELcjgQDzNq1n3LTVMSQAXGSs6E";
-            //     locationMap.onerror = function (e) {
-            //         KASClient.UI.removeElement(locationMap, location);
-            //     }
-            //     KASClient.UI.addElement(locationMap, location);
-            // }
-
-            // var locationName;
-            // if (_currentLocation["n"] != "") {
-            //     locationName = KASClient.UI.getElement("div", {
-            //         "padding": "14px",
-            //         "padding-top": "0pt",
-            //         "padding-bottom": "0pt",
-            //         "color": "#32485f",
-            //         "font-size": "12pt"
-            //     });
-
-            //     locationName.innerHTML = _currentLocation["n"];
-            // } else {
-            //     locationName = KASClient.UI.getElement("div", {
-            //         "padding": "14px",
-            //         "padding-top": "0pt",
-            //         "padding-bottom": "0pt",
-            //         "color": "#6f7e8f",
-            //         "font-size": "9pt"
-            //     });
-
-            //     locationName.innerHTML = _strings["strNoLocationLabel"];
-            // }
-
-            // KASClient.UI.addElement(locationName, location);
-
-            // KASClient.UI.addElement(location, locationDiv);
-            //KASClient.UI.addElement(detailsDiv, summaryView);
-            //KASClient.UI.addElement(locationDiv, summaryView);
+            KASClient.UI.addElement(fieldDiv, summaryView);
+            KASClient.UI.addElement(detailsDiv, summaryView);
+            KASClient.UI.addElement(locationDiv, summaryView);
         }
 
         // Fetching address from location
