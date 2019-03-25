@@ -48,7 +48,7 @@ class Map extends MX_Controller
         if(is_array($json_array)){
             foreach($json_array as $onePoint){
                 $save_farm_points = $this->map_model->save_mapped_points($onePoint);
-                return $save_farm_points;
+                echo $save_farm_points;
             }
         }
         else{

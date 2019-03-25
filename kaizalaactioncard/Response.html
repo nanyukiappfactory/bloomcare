@@ -1460,12 +1460,20 @@
                     if(_currentPage == 3){
                         KASClient.App.showProgressBar("Submitting your points");
                         map_details = JSON.stringify(showPointDetails);
+                        alert(map_details);
                         var xhttp = new XMLHttpRequest();
                         xhttp.onreadystatechange = function () {
                             if(this.readyState == 4 && this.status == 200) {
                                 KASClient.App.hideProgressBar();
                                 plotting_message = JSON.parse(this.responseText);
-                                showError(plotting_message);                            
+                                //showError(plotting_message);
+                                if(plotting_message == "Error when saving"){
+                                    showError(plotting_message);
+                                }
+                                else if(plotting_message != "Error when saving"){
+                                    showError(plotting_message);
+                                }
+                                submitFormResponse();                       
                                 }
                             
                             }
@@ -1474,7 +1482,7 @@
                         xhttp.setRequestHeader("Content-type", "application/json");
                         xhttp.send(map_details);
                         KASClient.App.hideProgressBar();
-                        submitFormResponse();
+                        
                     }
                 }
             });
