@@ -1,8 +1,8 @@
 {
   "id": "com.nanyukiaf.bloomcare",
   "schemaVersion": 1,
-  "version": "4",
-  "minorVersion": 191,
+  "version": "6",
+  "minorVersion": 2,
   "providerName": "NanyukiAF",
   "displayName": "Capture Map points",
   "description": "Capture Map points",
@@ -31,5 +31,8 @@
       "sourceLocation": "ResponseSummary.html",
       "showNativeToolbar": false
     }
-  }
+  },
+  "externalUrls": [
+    { "url" : "https://bloom-care.azurewebsites.net/map/save-mapping-points" }
+  ]
 }

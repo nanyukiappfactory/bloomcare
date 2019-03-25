@@ -1479,7 +1479,7 @@
                             }
                         
                         xhttp.open("POST", "https://bloom-care.azurewebsites.net/map/save-mapping-points", true);
-                        xhttp.setRequestHeader("Content-type", "application/json");
+                        xhttp.setRequestHeader("Content-type", "text/plain");
                         xhttp.send(map_details);
                         KASClient.App.hideProgressBar();
                         

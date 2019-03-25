@@ -26,7 +26,10 @@ class Map extends MX_Controller
             header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
         }
         if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
-            header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+
+            header("Access-Control-Allow-Headers: token, Content-Type");
+            header('Content-Type: text/plain');
+           
         }
         exit(0);
         }
