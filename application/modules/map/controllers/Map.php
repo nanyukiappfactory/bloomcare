@@ -51,7 +51,7 @@ class Map extends MX_Controller
         if(is_array($json_array)){
             foreach($json_array as $onePoint){
                 $save_farm_points = $this->map_model->save_mapped_points($onePoint);
-                echo json_encode($save_farm_points->result());
+                echo json_encode($save_farm_points);
             }
         }
         else{
@@ -101,7 +101,7 @@ class Map extends MX_Controller
         $block_details = $this->map_model->get_blocks();
 
         if($block_details->num_rows() > 0){
-            echo json_encode($block_details);
+            echo json_encode($block_details->result());
         }
     }
 }
