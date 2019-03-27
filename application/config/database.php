@@ -75,9 +75,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
+	'hostname' => 'nanyukiappfactory-mysqldbserver.mysql.database.azure.com',
+	'username' => 'bloomcare@nanyukiappfactory-mysqldbserver',
+	'password' => 'carebloom2019@#',
 	'database' => 'bloom_care',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

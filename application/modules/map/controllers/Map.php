@@ -62,6 +62,46 @@ class Map extends MX_Controller
         // return $save_farm_points;
     }
 
-    
+    public function generate_map()
+    {
+        $this->db->select("latitude, longitude, pillar_number, block_name");
+        $this->db->where("block_name", "Block A");
+        $query = $this->db->get("plotted_map");
+        
+        if($query->num_rows() > 0)
+        {
+            //echo json_encode($query->result());
+            $points = array();
+            $points_details = array();
+            foreach($query->result() as $res)
+            {
+                $latitude = $res->latitude;
+                $longitude = $res->longitude;
+                $pillar_number = $res->pillar_number;
+                $block_name = $res->block_name;
+                array_push($points, array(
+                    "lat" => $latitude,
+                    "lng" => $longitude,
+                    "pillar_number" => $pillar_number,
+                    "block_name" => $block_name
+                ));
+                array_push($points_details, array(
+                    "pillar_number" => $pillar_number
+                ));
+            }
 
+            $data["points_json"] = json_encode($points);
+            $data["points_details_json"] = json_encode($points_details);
+            $this->load->view("points2", $data);
+        }
+    }
+
+    public function get_blocks()
+    {
+        $block_details = $this->map_model->get_blocks();
+
+        if($block_details->num_rows() > 0){
+            echo json_encode($block_details);
+        }
+    }
 }

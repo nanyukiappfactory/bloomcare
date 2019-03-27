@@ -16,7 +16,11 @@ class Map_model extends CI_Model
         else{
             return "Error when saving";
         }
-            
+    }
 
+    function get_blocks()
+    {
+       $query =  $this->db->get("block");
+       return $query;
     }
 }

@@ -477,46 +477,87 @@
             var pageOneDiv = document.getElementById("page1");
             KASClient.UI.clearElement(pageOneDiv);
             
-            // start of block details
+            
+            for (var x = 0; x < totalQuestions; x++) {
+                let fieldDescription = questions[x];
+                let fieldId = fieldDescription["id"];
+                let fieldTitle = fieldDescription["title"];
+                let fieldType = fieldDescription["type"];
+                let optional = fieldDescription["isResponseOptional"];
+                let fieldInputType = "";
+                let compressedTitle = fieldTitle.replace(/\s+/g, '');
 
-            var fieldDiv = KASClient.UI.getElement("div");
-            fieldDiv.className = "section";
-            var fieldTitleDiv = KASClient.UI.getElement("div");
-            fieldTitleDiv.className = "question-title";
-            fieldTitleDiv.innerText = _strings["Block Details"];
-            var fieldInput = KASClient.UI.getElement("select");
-            fieldInput.className = "comment-input";
-            fieldInput.id = "Block Details";
-            //dependancy for IOS for just adding padding
-            if (KASClient.getPlatform() == KASClient.Platform.iOS) {
-                KASClient.UI.addCSS(fieldInput1, {
-                    "padding-left": "13pt"
-                });
-            }
-            fieldInput.addEventListener("click",function(event){
-                invalidateFooter();
-            });
-            fieldInput.addEventListener("blur",function(event){
-                getBlockDetails();
-            });
-            var xhttp = new XMLHttpRequest();
-            var url = "https://tambuzi.azurewebsites.net/getBlock";
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    try {
-                        blockdata = JSON.parse(this.responseText);
-                    } catch (e) {
-                        blockdata = this.responseText;
-                    }
-                    
-                    getPickNumber(blockdata);
+                switch (fieldType) {
+                    case 0:
+                        fieldInputType = "select";
+                        break;
+                    case 2:
+                        fieldInputType = "text";
+                        break;
+                    case 3:
+                        fieldInputType = "number";
+                        break;
+                    case 5:
+                        fieldInputType = "datetime-local";
+                        break;
+                    case 8:
+                        fieldInputType = "image";
+                        break;
+                    case 10:
+                        fieldInputType = "date";
+                        break;
+                    default:
+                        fieldInputType = "text";
                 }
-            };
-            xhttp.open("GET", url, true);
-            xhttp.send();
-            // end of block details
+                if(fieldInputType == "select" && fieldTitle == "Block Details"){
+                    var fieldDiv = KASClient.UI.getElement("div");
+                    fieldDiv.className = "section";
+                    var fieldTitleDiv = KASClient.UI.getElement("div");
+                    fieldTitleDiv.className = "question-title";
+                    fieldTitleDiv.innerText = _strings["Block Details"];
+                    var fieldInput = KASClient.UI.getElement("div");
+                    fieldInput.className = "option-div";
+                    for (i = 0; i < fieldDescription["options"].length; i++) {
+                        var option = fieldDescription["options"][i];
+                        var options = KASClient.UI.getElement("div");
+                        options.className = "options";
+                        options.value = option.id;
+                        // options.onclick = function () {
+                        //     this.checked = true;
+                        //     selectedOptions[compressedTitle] = this.value;
+                        //     invalidateFooter();
+                        // };
+
+                        var title = KASClient.UI.getElement("label", {
+                            "width": "85%",
+                            "padding-left": "6pt"
+                        });
+                        title.innerText = _strings[option.text];
+                        // if(i >= 1){
+                            var radio = KASClient.UI.getElement("input");
+                            radio.type = "radio";
+                            // radio.name = option.text + option.id;
+                            radio.name = compressedTitle + fieldId;
+                            radio.id = option.text;
+                            radio.onclick = function (event) {
+                                // alert(option);
+                                // alert(event.target.id);
+                                selectedOptions[compressedTitle] = event.target.id;
+                                blockHead = event.target.id;
+                                invalidateFooter();
+                            };
+                            KASClient.UI.addElement(title, options);
+                            KASClient.UI.addElement(radio, options);
+                        
+                        // }
+
+                        KASClient.UI.addElement(options, fieldInput);
+                    }
+
+                }
+            }
             //Addition icon
-         
+            //alert(2);
             var fieldDiv6 = KASClient.UI.getElement("div");
             var fieldTitleDiv6 = KASClient.UI.getElement("div");
             fieldTitleDiv6.className = "question-title";
@@ -586,7 +627,6 @@
             fieldInput1.className = "comment-input";
             fieldInput1.id = "Latitude";
             fieldInput1.innerText = _latitude;
-
             //dependancy for IOS for just adding padding
             if (KASClient.getPlatform() == KASClient.Platform.iOS) {
                 KASClient.UI.addCSS(fieldInput1, {
@@ -607,7 +647,6 @@
             fieldInput2.className = "comment-input";
             fieldInput2.id = "Longitude";
             fieldInput2.innerText = _longitude;
-
             //dependancy for IOS for just adding padding
             if (KASClient.getPlatform() == KASClient.Platform.iOS) {
                 KASClient.UI.addCSS(fieldInput2, {

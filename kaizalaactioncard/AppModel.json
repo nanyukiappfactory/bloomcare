@@ -7,23 +7,7 @@
   "isLocationRequested": false,
   "questions": [{
       "title": "Block Details",
-      "type": "SingleSelect",
-      "options": [{
-          "title": "Block A"
-        },
-        {
-          "title": "Block B"
-        },
-        {
-          "title": "Block C"
-        },
-        {
-          "title": "Block D"
-        },
-        {
-          "title": "Block E"
-        }
-      ]
+      "type": "Text"
     },
     {
       "title": "Latitude",

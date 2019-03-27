@@ -65,3 +65,5 @@ $route['friends/all-friends/(:num)'] = 'friends/test/index/$1';
 Mapping Routes
 */
 $route['map/save-mapping-points'] = 'map/map/index';
+$route['map/get_blocks'] = 'map/map/get_blocks';
+
